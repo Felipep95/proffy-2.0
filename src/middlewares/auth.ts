@@ -1,33 +1,42 @@
+import { Request, Response, NextFunction } from 'express';
+
+import jwt from 'jsonwebtoken';
+
 import AuthController from '../controllers/AuthController';
 
-const { Response, Request, Next} = require ("express");
+const authConfig = require ('../config/auth.json');
 
-const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 
 
-
-
-
-
-// module.exports = async (request: Request, response: Response, next: Next ) => {
+module.exports = async (request: Request, response: Response, next: NextFunction ) => {
     
-    // const authHeader = request.headers.authorization;
+    const authHeader = request.headers.authorization;
 
-    // if (!authHeader) {
-    //     return response.status(401).send({ error: 'No token provided'});
-    //     }
-    // }
-
-     
-    // try {
-    //     const decoded = await promisify(jwt.verify)( generatedToken, 'secret')
+    if (!authHeader) 
+        return response.status(401).send({ error: 'No token provided'});
         
-    // } catch (err) {
-    //     return response.status(401).send({ error: "Token invalid"});
-    // }
-
+    const parts = authHeader.split(' ');
 
     
-   
- 
+
+        const [, token] = authHeader.split(' ');
+
+    try {
+        
+         await promisify(jwt.verify)( token, authConfig.secret ); 
+        
+        // request.useId = decoded.id;
+        // request.id = decoded.id;
+        // request.id = decoded.id;
+
+        return next();
+    
+    } catch (error) {
+        
+        return response.status(401).send({ error: "Token invalid"});
+    }
+    
+}
+
+// export default auth;
