@@ -1,15 +1,34 @@
 import { Request, Response, } from 'express'
+
 import db from '../database/connections';
+
 import bcrypt from 'bcrypt';
+
 import jwt from 'jsonwebtoken';
-// import env from './config/env';
+
 const authConfig = require ('../config/auth');
 
+// import './config/env';
+
+// function generateToken(params = {}) {
+//     return jwt.sign( params, authConfig.secret, {
+//          expiresIn: 86400
+//     });
+//  }
+
+const secret:string = process.env.SECRET || '';
+
 function generateToken(params = {}) {
-    return jwt.sign( params, authConfig.secret, {
+    return jwt.sign( params, secret, {
          expiresIn: 86400
     });
  }
+
+//  function gntToken(params = {}) {
+//     return jwt.sign( params, secret, {
+//          expiresIn: 86400
+//     });
+//  }
 
 export default class AuthController {
 
@@ -72,41 +91,36 @@ export default class AuthController {
         bcrypt.compare(password, user.password, function(err, result) {
             
             if(result){
-            return response.status(200).json({ msg: "Successfully logged in"});
+                return response.send({
+                    user,
+                    token: generateToken({  id: user_id }),
+                })
+               // return status(200).json({ msg: "Successfully logged in"});
             }
             return response.status(400).json({ error: "Invalid password" });
         });
 
         user.password = undefined;
-
-        // const useData = {
-        //     user_id,
-        //     name: user[0].name,
-        //     last_name: user[0].last_name,
-        //     avatar: user[0].avatar,
-        //     whatsapp: user[0].whatsapp,
-        //     bio: user[0].bio,
-        //     email: user[0].email,
-        // }
-
+        
         // const token = generateToken({ id: user_id});
         
-        return response.send({
-            // useData, 
-            token: generateToken({  id: user_id }),
-        })
+    //   console.log(process.env.secret);
         
         
     //    const Token = jwt.sign({ id: user_id }, authConfig.secret, {
     //     expiresIn: 86400
     //   });
+
+    //   const tk = jwt.sign({ id: user_id }, process.env.APP_SECRET, {
+    //     expiresIn: 86400
+    //   });
         
-    //   response.send( {user, Token} );
+    //  response.send( {user, Token} );
     // authConfig.secret
     }
 
     async logout (request: Request, response: Response) {
-        response.json({ authUser: false, Token: null});
+        response.json({ authUser: false, token: null});
     };
 }
 

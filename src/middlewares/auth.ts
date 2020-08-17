@@ -16,27 +16,22 @@ module.exports = async (request: Request, response: Response, next: NextFunction
     if (!authHeader) 
         return response.status(401).send({ error: 'No token provided'});
         
-    const parts = authHeader.split(' ');
-
-    
-
-        const [, token] = authHeader.split(' ');
+    const [, token] = authHeader.split(' ');
 
     try {
-        
-         await promisify(jwt.verify)( token, authConfig.secret ); 
-        
-        // request.useId = decoded.id;
-        // request.id = decoded.id;
-        // request.id = decoded.id;
-
+        const secret:string = process.env.SECRET || '';
+        // const secret = process.env.SECRET as string;
+        // await promisify(jwt.verify)( token, authConfig.secret ); 
+        await promisify(jwt.verify)( token, secret );
         return next();
-    
+         // request.id = decoded.id;
     } catch (error) {
-        
         return response.status(401).send({ error: "Token invalid"});
     }
     
-}
+}; 
+ 
 
-// export default auth;
+
+
+
