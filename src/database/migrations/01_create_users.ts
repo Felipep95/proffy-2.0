@@ -8,6 +8,13 @@ export async function up(knex: Knex){
     table.string('avatar').nullable();
     table.string('whatsapp').nullable();
     table.string('bio').nullable();
+//
+    table.integer('auth_id')
+            .notNullable()
+            .references('id')
+            .inTable('usersAuth')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
   })
 }
 

@@ -47,25 +47,26 @@ export default class AuthController {
         else {
             
             try {
-                const insertedUsersIds = await db('users').insert({
-                    name,
-                    last_name,
-                })
-    
-                const user_id = insertedUsersIds[0]
-    
+
                 password = await bcrypt.hash(password, 10);
     
-                const authUser = await db('usersAuth').insert({
+                const insertedAuthid = await db('usersAuth').insert({
                     email,
                     password,
-                    user_id
+                })
+
+                const auth_id = insertedAuthid[0]
+                
+                const users = await db('users').insert({
+                    name,
+                    last_name,
+                    auth_id,
                 })
                 
                 return response.status(201).json('User successfully registered')
                 
             } catch (err) {
-    
+                console.log(err);
                 return response.status(400).json({
                     error: 'Unexpected error while creating new user'
                 })

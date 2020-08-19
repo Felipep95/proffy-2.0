@@ -46,7 +46,9 @@ export default class ClassesController {
 
   async create(request: Request, response: Response){
     const { 
-      name, 
+      id,
+      name,
+      last_name, 
       avatar, 
       whatsapp, 
       bio, 
@@ -54,18 +56,27 @@ export default class ClassesController {
       cost, 
       schedule 
     } = request.body
+
+
   
-    const trx = await db.transaction()
+    const trx = await db.transaction();
+
+
   
     try{
-      const insertedUsersIds = await trx('users').insert({
+
+      await trx('users')
+      .where('auth_id', '=', id)
+      .update({
         name,
+        last_name,
         avatar,
         whatsapp,
         bio
       })
 
-      const user_id = insertedUsersIds[0]
+      const user_id = id[0];
+      // const user_id = await trx('users').select('id').where('auth_id', '=', id);
     
       const insertedClassesIds = await trx('classes').insert({
         subject,
@@ -92,7 +103,7 @@ export default class ClassesController {
     } catch (err) {
   
       await trx.rollback()
-  
+      console.log(err);
       return response.status(400).json({
         error: 'Unexpected error while creating new class'
       })

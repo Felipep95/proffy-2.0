@@ -8,12 +8,12 @@ export async function up(knex: Knex){
             table.string('email').notNullable();
             table.string('password').notNullable();
 
-            table.integer('user_id')
-            .notNullable()
-            .references('id')
-            .inTable('users')
-            .onUpdate('CASCADE')
-            .onDelete('CASCADE')
+            // table.integer('user_id')
+            // .notNullable()
+            // .references('id')
+            // .inTable('users')
+            // .onUpdate('CASCADE')
+            // .onDelete('CASCADE')
     
             table.timestamp('created_at')
             .notNullable()
